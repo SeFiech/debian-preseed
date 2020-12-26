@@ -1,0 +1,2 @@
+# debian-pressed
+Debian preseed
