@@ -145,11 +145,6 @@ tasksel tasksel/first multiselect standard, ssh-server
 
 #d-i pkgsel/updatedb boolean true
 
-# APT Config
-#d-i apt-setup/universe boolean true
-#d-i apt-setup/services-select multiselect security, updates
-#d-i apt-setup/security_host string security.ubuntu.com
-#d-i apt-setup/security_path string /ubuntu
 
 ### Package selection
 #d-i tasksel/first multiselect standard
@@ -182,6 +177,13 @@ tasksel tasksel/first multiselect standard, ssh-server
 d-i grub-installer/only_debian boolean true
 #d-i grub-installer/with_other_os boolean false
 d-i grub-installer/bootdev  string default
+
+#d-i preseed/late_command string apt-install zsh; in-target chsh -s /bin/zsh
+#d-i preseed/late_command string cp -a /cdrom/firstboot /target/etc/init.d/firstboot; in-target chmod +x /etc/init.d/firstboot; in-target chmod 755 /etc/init.d/firstboot; in-target ln -s /etc/init.d/firstboot /etc/rc3.d/S99firstboot
+
+d-i preseed/late_command string cp /cdrom/firstboot /target/var/tmp/firstboot; \
+in-target +x /var/tmp/firstboot; \
+in-target /bin/sh /var/tmp/firstboot;
 
 
 ### Post-Install

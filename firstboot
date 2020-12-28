@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Log everything to file
+exec >>/var/log/postinst.out 2>&1
+set -x
+
+
+# Script begins
+type bash
+cd `dirname $0`
+pwd
+PATH=$PATH:.
+
+# Log with timestamp
+timestamp() { date +"%F_%T_%Z"; }
+
+echo -e "\\n\\n$(timestamp) [openHABian] Starting the openHABian initial setup."
+
+echo -n "$(timestamp) [openHABian] Storing configuration... "
+
+# fix sudoers
+#sed -i 's/^%sudo.*ALL:ALL.*/%sudo      ALL=(ALL) NOPASSWD: ALL/' /etc/sudoers
+
+# == add apt sources
+
+# the Medibuntu - Ubuntu multimedia repository
+#wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list && sudo apt-get --quiet update && sudo apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring && sudo apt-get --quiet update
+#add-apt-repository -y ppa:jon-severinsson/ffmpeg
+
+# == my customization
+apt-get update -y
+apt-get upgrade -y
+
+apt-get -y install htop curl git
+
+# download, link and create config file
+git clone -b openHAB3 https://github.com/openhab/openhabian.git /opt/openhabian
+ln -s /opt/openhabian/openhabian-setup.sh /usr/local/bin/openhabian-config
+cp /opt/openhabian/openhabian.conf.dist /etc/openhabian.conf
+
+sed -i 's/debugmode=off/debugmode=maximum/g' /etc/openhabian.conf
+
+#/usr/local/bin/openhabian-config unattended

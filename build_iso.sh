@@ -6,7 +6,7 @@ DEBIAN_DL_URL='https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-
 ROOTPATH="/home/jakopitsch/debian"
 RAW_DEBIAN_ISO="$ROOTPATH/debian_amd64_netinst.iso"
 WORKDIR="$ROOTPATH/DEBIAN_ISO_WORKDIR"
-PRESEED_ISO="$ROOTPATH/debian-amd64-PRESEED.iso"
+PRESEED_ISO="$ROOTPATH/debian-amd64-PRESEED1.iso"
 
 #check  is root?
 if [[ $EUID -ne 0 ]]; then
@@ -18,6 +18,10 @@ apt install xorriso isolinux -y -q
 
 # Scrub workdir
 rm -rf $WORKDIR
+
+if [ ! -f $PRESEED_ISO ]; then
+    rm -rf $PRESEED_ISO
+fi
 
 # create Rootfolder if not exist
 [ ! -d  $ROOTPATH ] && mkdir -v $ROOTPATH || echo "$ROOTPATH existiert schon"
@@ -54,6 +58,7 @@ label desktop
 EOF
 
 cat ./deb.preseed > $WORKDIR/isodir/ks.preseed
+cat ./firstboot > $WORKDIR/isodir/firstboot
 
 # cd $WORKDIR/isodir
 # chmod +w -R install.amd/
